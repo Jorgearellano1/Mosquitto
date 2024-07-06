@@ -72,12 +72,11 @@ Este proyecto utiliza Mosquitto MQTT para la visualización de datos en tiempo r
    #include <PubSubClient.h>
    #include <DHT.h>
 
-   #define DHTPIN D2 // Pin donde está conectado el sensor DHT
-   #define DHTTYPE DHT11 // Cambia a DHT22 si usas ese modelo
-
-   const char* ssid = "TU_SSID"; // Tu SSID WiFi
-   const char* password = "TU_PASSWORD"; // Tu contraseña WiFi
-   const char* mqtt_server = "TU_DIRECCION_MQTT"; // Dirección del broker MQTT
+   #define DHTPIN D2 
+   #define DHTTYPE DHT11 
+   const char* ssid = "TU_SSID";
+   const char* password = "TU_PASSWORD"; 
+   const char* mqtt_server = "TU_DIRECCION_MQTT";
 
    WiFiClient espClient;
    PubSubClient client(espClient);
