@@ -138,4 +138,35 @@ Este proyecto utiliza Mosquitto MQTT para la visualización de datos en tiempo r
 
      delay(2000);
    }
+5.**Pruebas de Publicacion de Datos Temperatura con Mosquitto**:
+     ```
+     mosquitto_pub -h localhost -t sensor/temperature -m "22.5"
+     mosquitto_pub -h localhost -t sensor/humidity -m "55"
+     mosquitto_pub -h localhost -t sensor/temperature -m "23.7"
+     mosquitto_pub -h localhost -t sensor/humidity -m "60"
+     ```
+6.**Estructura (BORRADOR)**:
+/src
+  /components
+    Footer.js
+    Header.js
+    MqttComponent.js
+    SensorCard.js
+    SensorGrid.js
+    Thermometer.js
+  /styles
+    App.css
+    Footer.css
+    Header.css
+    MqttComponent.css
+    SensorCard.css
+    SensorGrid.css
+    Thermometer.css
+  App.js
+  index.js
+  index.css
+
+
+
+
 
