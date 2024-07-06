@@ -14,13 +14,34 @@ Este proyecto utiliza Mosquitto MQTT para la visualización de datos en tiempo r
 ### Conexión del Hardware
 
 1. **Conectar el Sensor DHT11 al ESP8266**:
-   - **VCC** del DHT11 a **3.3V** en el ESP8266
-   - **GND** del DHT11 a **GND** en el ESP8266
-   - **Data** del DHT11 al pin **D2** (GPIO4) en el ESP8266
+   - **VCC** del DHT11 a **3.3V** en el ESP8266: Conecta el pin de voltaje (VCC) del sensor DHT11 al pin de 3.3V en el ESP8266 para alimentarlo.
+   - **GND** del DHT11 a **GND** en el ESP8266: Conecta el pin de tierra (GND) del sensor DHT11 al pin de tierra en el ESP8266 para completar el circuito eléctrico.
+   - **Data** del DHT11 al pin **D2** (GPIO4) en el ESP8266: Conecta el pin de datos (Data) del sensor DHT11 al pin D2 (GPIO4) en el ESP8266 para la transmisión de datos.
 
 ### Configuración del Software
 
-### 1. Configurar Arduino IDE
+#### 1. Instalar y Configurar Mosquitto
+
+1. **Instalar Mosquitto**:
+   - En una terminal, ejecuta:
+     ```sh
+     sudo apt-get update
+     sudo apt-get install mosquitto mosquitto-clients
+     ```
+
+2. **Iniciar el servicio de Mosquitto**:
+   - Inicia el servicio con el comando:
+     ```sh
+     sudo systemctl start mosquitto
+     ```
+
+3. **Habilitar el servicio de Mosquitto al iniciar el sistema**:
+   - Ejecuta:
+     ```sh
+     sudo systemctl enable mosquitto
+     ```
+
+#### 2. Configurar Arduino IDE
 
 1. **Instalar el Arduino IDE**:
    - Descárgalo desde [Arduino.cc](https://www.arduino.cc/en/Main/Software).
@@ -118,3 +139,4 @@ Este proyecto utiliza Mosquitto MQTT para la visualización de datos en tiempo r
 
      delay(2000);
    }
+
