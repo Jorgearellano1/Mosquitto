@@ -11,14 +11,14 @@ Este proyecto utiliza Mosquitto MQTT para la visualización de datos en tiempo r
 - **Node.js y npm**
 - **Git**
 
-## Configuración del Hardware
+### Conexión del Hardware
 
 1. **Conectar el Sensor DHT11 al ESP8266**:
    - **VCC** del DHT11 a **3.3V** en el ESP8266
    - **GND** del DHT11 a **GND** en el ESP8266
    - **Data** del DHT11 al pin **D2** (GPIO4) en el ESP8266
 
-## Configuración del Software
+### Configuración del Software
 
 ### 1. Configurar Arduino IDE
 
@@ -118,8 +118,3 @@ Este proyecto utiliza Mosquitto MQTT para la visualización de datos en tiempo r
 
      delay(2000);
    }
-
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
