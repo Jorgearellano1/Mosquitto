@@ -1,69 +1,124 @@
-# Getting Started with Create React App
+# Mosquitto MQTT Project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este proyecto utiliza Mosquitto MQTT para la visualización de datos en tiempo real de sensores, conectados a una aplicación frontend construida con React.
 
-## Available Scripts
+## Requisitos
 
-In the project directory, you can run:
+- **Mosquitto MQTT Broker**
+- **ESP8266 (NodeMCU o Wemos D1 Mini)**
+- **Sensor DHT11**
+- **Arduino IDE**
+- **Node.js y npm**
+- **Git**
 
-### `npm start`
+## Configuración del Hardware
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. **Conectar el Sensor DHT11 al ESP8266**:
+   - **VCC** del DHT11 a **3.3V** en el ESP8266
+   - **GND** del DHT11 a **GND** en el ESP8266
+   - **Data** del DHT11 al pin **D2** (GPIO4) en el ESP8266
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Configuración del Software
 
-### `npm test`
+### 1. Configurar Arduino IDE
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **Instalar el Arduino IDE**:
+   - Descárgalo desde [Arduino.cc](https://www.arduino.cc/en/Main/Software).
 
-### `npm run build`
+2. **Agregar el Gestor de Placas para ESP8266**:
+   - Abre el IDE de Arduino.
+   - Ve a `Archivo > Preferencias`.
+   - En la sección `Additional Boards Manager URLs`, añade:
+     ```
+     http://arduino.esp8266.com/stable/package_esp8266com_index.json
+     ```
+   - Ve a `Herramientas > Placa > Gestor de Placas`.
+   - Busca `esp8266` e instala el paquete.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. **Instalar Librerías Necesarias**:
+   - Ve a `Herramientas > Administrar Bibliotecas`.
+   - Busca e instala las siguientes librerías:
+     - `DHT sensor library` de Adafruit
+     - `Adafruit Unified Sensor`
+     - `PubSubClient`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. **Código para el ESP8266**:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   Abre el IDE de Arduino y copia el siguiente código:
 
-### `npm run eject`
+   ```cpp
+   #include <ESP8266WiFi.h>
+   #include <PubSubClient.h>
+   #include <DHT.h>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+   #define DHTPIN D2 // Pin donde está conectado el sensor DHT
+   #define DHTTYPE DHT11 // Cambia a DHT22 si usas ese modelo
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   const char* ssid = "TU_SSID"; // Tu SSID WiFi
+   const char* password = "TU_PASSWORD"; // Tu contraseña WiFi
+   const char* mqtt_server = "TU_DIRECCION_MQTT"; // Dirección del broker MQTT
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+   WiFiClient espClient;
+   PubSubClient client(espClient);
+   DHT dht(DHTPIN, DHTTYPE);
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   void setup() {
+     Serial.begin(115200);
+     setup_wifi();
+     client.setServer(mqtt_server, 1883);
+     dht.begin();
+   }
 
-## Learn More
+   void setup_wifi() {
+     delay(10);
+     Serial.println();
+     Serial.print("Connecting to ");
+     Serial.println(ssid);
+     WiFi.begin(ssid, password);
+     while (WiFi.status() != WL_CONNECTED) {
+       delay(500);
+       Serial.print(".");
+     }
+     Serial.println("");
+     Serial.println("WiFi connected");
+     Serial.println("IP address: ");
+     Serial.println(WiFi.localIP());
+   }
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   void reconnect() {
+     while (!client.connected()) {
+       Serial.print("Attempting MQTT connection...");
+       if (client.connect("ESP8266Client")) {
+         Serial.println("connected");
+       } else {
+         Serial.print("failed, rc=");
+         Serial.print(client.state());
+         Serial.println(" try again in 5 seconds");
+         delay(5000);
+       }
+     }
+   }
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+   void loop() {
+     if (!client.connected()) {
+       reconnect();
+     }
+     client.loop();
 
-### Code Splitting
+     float h = dht.readHumidity();
+     float t = dht.readTemperature();
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+     if (isnan(h) || isnan(t)) {
+       Serial.println("Failed to read from DHT sensor!");
+       return;
+     }
 
-### Analyzing the Bundle Size
+     String payload = "Temperature: " + String(t) + "C, Humidity: " + String(h) + "%";
+     client.publish("sensor/dht", (char*) payload.c_str());
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+     delay(2000);
+   }
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
 ### `npm run build` fails to minify
 
